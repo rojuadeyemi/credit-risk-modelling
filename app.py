@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException, Body, Depends, Request
 from pydantic import BaseModel
 from typing import Optional
-from utility.performance_report import find_best
 from utility.utility_functions import load_model
 from sqlalchemy.orm import Session
 from utility.db_models import Log
@@ -80,13 +79,13 @@ def evaluate_customer(
 
     
     # Initialize and load the best model
-    _, model_path = find_best()
-    model = load_model(model_path)
+    model = load_model(r"C:\Users\Aderoju\Desktop\Python Project\Credit Risk Modelling\model\cv_Random Forest.pkl")
 
     # define input_data
     input_df = pd.DataFrame([data.model_dump()])
 
     input_df = input_df.apply(pd.to_numeric, errors="ignore")
+    
     # Run the model
     default_probability = float(model.predict_proba(input_df)[0][1])
 

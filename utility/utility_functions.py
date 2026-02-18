@@ -1,13 +1,80 @@
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.metrics import roc_auc_score,roc_curve,confusion_matrix
 import joblib
 import os
+import numpy as np
 from sklearn.model_selection import train_test_split
 from fairlearn.metrics import (MetricFrame,selection_rate,demographic_parity_difference,demographic_parity_ratio,
     equalized_odds_difference,true_positive_rate)
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import (roc_auc_score,roc_curve,confusion_matrix,classification_report,
+                             accuracy_score, precision_score, recall_score, f1_score)
+
+def model_report(X_test, y_test,model,model_name):
+
+    # load the model and predict
+    y_pred = model.predict(X_test)
+
+    # ROC Curve AUC
+    roc_auc = plot_roc_curve(model, X_test, y_test, "CV "+model_name)
+
+    # Confusion Matrix
+    plot_confusion_matrix(y_test, y_pred, "CV "+model_name)
+
+    # Classification Report
+    class_report = classification_report(y_test, y_pred, output_dict=True)
+
+    # Model Performance metrics
+    accuracy = accuracy_score(y_test, y_pred)
+    precision = precision_score(y_test, y_pred)
+    recall = recall_score(y_test, y_pred)
+    f1 = f1_score(y_test, y_pred)
+
+    metrics = {
+        'accuracy': [accuracy],
+        'precision': [precision],
+        'recall': [recall],
+        'f1_score': [f1],
+        'roc_auc': [roc_auc]
+    }
+    path ="./report"
+    print(f"{model_name} Model Performance Report")
+    print(metrics)
+    print()
+
+    os.makedirs(path,exist_ok=True)
+    pd.DataFrame(metrics).to_csv(os.path.join(path, f"{model_name}_performance_report.csv"),index=False)
+    pd.DataFrame(class_report).to_csv(os.path.join(path, f"{model_name}_classification_report.csv"))
+    
+    print(f"Kindly check '{path}' for the reports")
+
+
+
+def reweight(y_train, gender_train):
+
+    y_train = np.asarray(y_train).ravel()
+    gender_train = np.asarray(gender_train).ravel()
+
+    df = pd.DataFrame({
+        "y": y_train,
+        "gender": gender_train
+    })
+
+    group_counts = df.groupby(["gender", "y"]).size()
+    
+    total = len(df)
+
+    weights_dict = {}
+
+    for (g, y_val), count in group_counts.items():
+        weights_dict[(g, y_val)] = total / count
+    
+    weights = [
+        weights_dict[(g, y_val)]
+        for g, y_val in zip(gender_train, y_train)
+    ]
+
+    return weights
 
 # custom function for loading dataset
 def load_data(dataset_path): 

@@ -8,7 +8,7 @@ from imblearn.over_sampling import SMOTE
 from sklearn.feature_selection import SelectFromModel, SelectKBest, mutual_info_classif
 import numpy as np
 
-def pipe_line(X_train, model,model_name):
+def pipe_line(X_train, model):
     numeric_columns = X_train.select_dtypes(include=['float64','int64']).columns
     categorical_columns = X_train.select_dtypes(include=['object','category']).columns
 
@@ -40,13 +40,8 @@ def pipe_line(X_train, model,model_name):
     ])
 
     preprocessor.set_output(transform="pandas")
-    # --- Feature selection depending on model ---
-    if model_name in ["LogisticR","RandomForest","XGBoost"]:
-        selector = SelectFromModel(model, threshold=0.005)
-    elif model_name=="KNN":
-        selector = SelectKBest(mutual_info_classif, k=40)
-    else:
-        raise ValueError(f"Feature selection not defined for {type(model)}")
+    # --- Feature selection ---
+    selector = SelectFromModel(model, threshold=0.005)
 
     pipeline = ImbPipeline([
         ("feature_engineering", FeatureEngineer()),

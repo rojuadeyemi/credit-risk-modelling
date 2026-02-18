@@ -36,16 +36,16 @@ def feature_engineering(df):
     df["loan_to_balance"] = np.clip(ratio, 0, 100)  # cap at 100
 
     # Refine the residence history and employment length
-    df["residence_history"] = df["residence_history"].apply(convert_to_month)
-    df["employment_length"] = df["employment_length"].apply(convert_to_month)
+    df["residence_history"] = df["residence_history"].apply(convert_to_year)
+    df["employment_length"] = df["employment_length"].apply(convert_to_year)
 
     # 4. Credit History Severity Score
     severity_map = {
         "critical": 0,
-        "delayed": 2,
-        "repaid": 7,
-        "fully repaid": 7,
-        "fully repaid this bank": 10}
+        "delayed": 1,
+        "repaid": 5,
+        "fully repaid": 8,
+        "fully repaid this bank": 15}
     df["credit_history"] = df["credit_history"].map(severity_map)
 
     # 5. Interaction Feature
@@ -54,9 +54,9 @@ def feature_engineering(df):
     return df
 
 # a helper function to convert residence_history and employment_length to number of months
-def convert_to_month(text):
+def convert_to_year(text):
     if pd.isna(text):
         return None
     text = text.lower()
     multiplier = 12 if "year" in text else 1
-    return int(text.split()[0]) * multiplier
+    return int(text.split()[0]) * multiplier//12
