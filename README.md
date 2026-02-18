@@ -12,13 +12,13 @@ This project provides a **FastAPI-based credit risk scoring API** that receives 
 * Data Cleaning: The data underwent extensive cleaning to handle missing values, outliers, and data inconsistencies.
 * Feature Engineering: New features such as `Loan to Balance ratio, Age Bucket, Credit History Severity, Missing flags` were created from the existing ones to improve model performance.
 * Automated feature selection during training and inferential, to remove redundant features.
-* Hyperparameter Tuning: K-Fold Cross-validation was first used to determine the best model. Then, Grid Search algorith was employed to fine-tune the best model for optimal performance.
-* Algorithms Tested: Logistic Regression, Random Forests, XGBoost, and K-Nearest Neighbor.
+* Hyperparameter Tuning: K-Fold Cross-validation and Random Search were used to fine-tune the models for optimal performance.
+* Algorithms Tested: Logistic Regression, Random Forests, XGBoost.
 * Performance Metrics: Accuracy, precision, recall, F1-score, and AUC-ROC.
-* Fairness Check: Here we will carried out fairness check for gender to ascertain model fairness irrespective of gender category.
+* Fairness Check: Here we carried out fairness check for gender to ascertain model fairness irrespective of gender category.
 
 #### 3. Model Deployment:
-* Best Model Selection: `XGBoost` demonstrated the best performance in predicting credit risk, and hence was selected for deployment.
+* Best Model Selection: `Random Forest` demonstrated the best performance in predicting credit risk, and in fairness irrespective of the gender group, and hence was selected for deployment.
 * Real-Time Prediction: The selected model was integrated into a FlaskAPI, enabling real-time prediction of defaulting status based on user inputs.
 
 #### 4. Database Integration:
@@ -44,7 +44,7 @@ This project provides a **FastAPI-based credit risk scoring API** that receives 
 
 - 📂 **utility/** : package folder containing helper functions (e.g., preprocessing, feature engineering,model_training, database schema etc).
 - 📂 **models/** : folder containing the pre-trained ML models.
-- 📄 **requirements.txt** → list of all required dependencies.
+- 📄 **requirements.txt** : list of all required dependencies.
 - 📄 **app.py** : main FastAPI application file.
 
 ---
@@ -105,7 +105,7 @@ uvicorn app:app
 
 This endpoint takes borrower/application data as input and returns:
 
-- **status** → model’s classification (e.g., *default* or *normal*).
+- **status** → model’s classification (e.g., *Bad* or *Good*).
 - **default_probability** → likelihood of default.
 
 **Sample Payload**:
@@ -136,7 +136,7 @@ This endpoint takes borrower/application data as input and returns:
 
 ```json
 {
-    "status": "default",
+    "status": "Bad",
     "default_probability": 0.72
 }
 ```
@@ -171,7 +171,7 @@ This endpoint retrieves stored records from the SQLite database, allowing you to
 Below is the flow of data through the system:
 
 ```
-Client (Postman, Frontend, etc.)
+Client (Postman, SwaggerUI, etc.)
         │
         ▼
    FastAPI App (app.py)
@@ -186,7 +186,6 @@ This ensures both **real-time predictions** and **persistent storage** for monit
 ---
 
 With these steps, you can successfully **deploy, test, and query** the credit risk scoring API.
-
 
 
 ### Alternatively - Predicting using Native Python
