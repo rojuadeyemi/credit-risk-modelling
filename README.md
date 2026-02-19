@@ -54,8 +54,8 @@ This project provides a **FastAPI-based credit risk scoring API** that receives 
 1. **Clone the repository:**
 
     ```sh
-    git clone https://github.com/rojuadeyemi/diabetes-test-app.git
-    cd diabetes-test-app
+    git clone https://github.com/rojuadeyemi/credit-risk-modelling.git
+    cd credit-risk-modelling
     ```
 
 2. **Create a Virtual Environment**
